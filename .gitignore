@@ -1,0 +1,65 @@
+########################################
+# Paruthi Labs
+########################################
+# .gitignore file from paruthilabs
+
+# =============== #
+# Unity Generated #
+# =============== #
+[Tt]emp/
+[Oo]bj/
+[Ll]ibrary/
+*.pidb.meta
+#Assets/AssetStoreTools*
+UWP/
+[Ll]ogs/
+Server/
+
+# ===================================== #
+# Visual Studio / MonoDevelop Generated #
+# ===================================== #
+ExportedObj/
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+
+# ===================================== #
+# Unity3D Generated File On Crash Reports
+# ===================================== #
+sysinfo.txt
+*.stackdump
+
+# ===================================== #
+# Builds
+# ===================================== #
+[Bb]uild
+[Bb]uilds/
+*.apk
+*.unitypackage
+
+
+# ============ #
+# OS generated #
+# ============ #
+#.DS_Store*
+#._*
+#.Spotlight-V100
+#.Trashes
+#Icon?
+#ehthumbs.db
+#[Tt]humbs.db
+#[Dd]esktop.ini
+#Corridor/Library/ShaderCache/
+#Corridor/Library/metadata/
+
+
+########################################
