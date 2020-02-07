@@ -18,13 +18,16 @@ public class TCPInterface
 
     TcpClient tcpClient;
     string message = "dummy string";
+    bool isConnected = false;
 
     string logStr = "LOG:\n";
     Thread tcpThread;
     bool isThreadRunning = false;
     string logFileName = "TCPLog.txt";
     StreamWriter logStreamWriter;
+    NetworkStream networkStream;
 
+    int msgCount = 0;
 
     public TCPInterface()
     {
@@ -34,23 +37,20 @@ public class TCPInterface
     public void OnInit()
     {
         logStreamWriter = new StreamWriter(Application.persistentDataPath + "/" + logFileName);
-        serverPort = localPort;
+        serverPort = 12345;
         isThreadRunning = true;
         ThreadStart threadStart = new ThreadStart(OnConnectToServer);
         tcpThread = new Thread(threadStart);
         tcpThread.Start();
         tcpThread.IsBackground = true;
         logStr += "-- Thread done --";
-        logStreamWriter.Write(logStr);
+        //logStreamWriter.Write(logStr);
     }
 
 
     public void OnDisable()
     {
-        logStreamWriter.Write("------------------------ x EOF x ------------------------");
-        logStreamWriter.Close();
-        tcpClient.Close();
-        tcpThread.Abort();
+        OnDisconnect();
     }
 
 
@@ -80,18 +80,20 @@ public class TCPInterface
             tcpClient = new TcpClient();
             tcpClient.Connect(serverUrl, serverPort);
             logStr += "-- Connect -- ";
+            isConnected = true;
         }
         catch (Exception e)
         {
             logStr += "-- Exp : " + e.StackTrace;
         }
 
-        NetworkStream networkStream = tcpClient.GetStream();
-        for (int j = 0; j < 10; j++)
+        networkStream = tcpClient.GetStream();
+        while (isConnected)
         {
             string fullStr = "";
             //yield return new WaitForSeconds(0.1f);
-            fullStr += "\n[" + j + "] -> ";
+            fullStr += "\n[" + msgCount + "] -> ";
+            msgCount++;
             try
             {
                 // Translate the passed message into ASCII and store it as a Byte array.
@@ -108,12 +110,28 @@ public class TCPInterface
             }
             catch (Exception e)
             {
-                logStr += "-- Exp : " + e.StackTrace;
+                logStr += "Exp : WhileLoop :  " + e.StackTrace;
             }
             //Thread.Sleep(2000);
         }
         networkStream.Close();
+    }
+
+    public void OnDisconnect()
+    {
+        isConnected = false;
+        networkStream.Close();
         tcpClient.Close();
+        tcpThread.Abort();
+
+        if (logStreamWriter.BaseStream != null)
+        {
+            if (logStreamWriter.BaseStream != null)
+            {
+                logStreamWriter.Write("------------------------ x EOF x ------------------------");
+                logStreamWriter.Close();
+            }
+        }
     }
 
 

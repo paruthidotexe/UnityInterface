@@ -1,5 +1,6 @@
 import socket
 import time
+from datetime import datetime
 from random import randint
 import threading
 
@@ -16,8 +17,12 @@ while True:
     while True:
         try:
             data = randint(0, 9)
-            print ('Server sent:', data)
-            conn.send(data.to_bytes(2, byteorder='big'))
+            now = datetime.now()
+            date_time = now.strftime("%m/%d/%Y, %H:%M:%S")            
+
+            print ('Server sent:', date_time)
+            #conn.send(data.to_bytes(2, byteorder='big'))
+            conn.send(bytes(date_time, "utf-8"))
             time.sleep(1)
         except socket.error:
             print ('Client connection closed', addr)

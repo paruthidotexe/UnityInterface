@@ -11,13 +11,23 @@ public class TCPClientUI : MonoBehaviour
 
     void Start()
     {
-        tcpInterface.OnInit();
+        
     }
 
     void Update()
     {
         logText.text = tcpInterface.GetTcpLog();
         Debug.Log(tcpInterface.GetTcpLog());
+    }
+
+    public void OnInit()
+    {
+        tcpInterface.OnInit();
+    }
+
+    public void OnDisconnect()
+    {
+        tcpInterface.OnDisconnect();
     }
 
     void OnDisable()
