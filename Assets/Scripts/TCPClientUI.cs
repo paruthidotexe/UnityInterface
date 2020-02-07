@@ -13,6 +13,7 @@ public class TCPClientUI : MonoBehaviour
 
     public GameObject cubeObj;
     int scaleVal = 2;
+    bool isCubeDataReceived = false;
 
     void Start()
     {
@@ -25,7 +26,11 @@ public class TCPClientUI : MonoBehaviour
         log2Text.text = tcpInterface.GetReceiveData();
         logText.text = tcpInterface.GetTcpLog();
 
-        cubeObj.transform.localScale = Vector3.one * scaleVal;
+        if (isCubeDataReceived)
+        {
+            cubeObj.transform.localScale = Vector3.one * scaleVal;
+            isCubeDataReceived = false;
+        }
     }
 
 
@@ -58,12 +63,24 @@ public class TCPClientUI : MonoBehaviour
     {
         //logStr += val;
         //logText.text = logStr;
-        Debug.Log("OnReceiveData : [" + val);//"]= " + Convert.ToInt32(val)
-        scaleVal = Convert.ToInt32(val);
-        if (scaleVal <= 2)
-            scaleVal = 2;
-        Debug.Log("]= " + scaleVal);
-        
+        Debug.Log("OnReceiveData : [" + val + "]");// + Convert.ToInt32(val)
+        ApplyToCube(val);       
+    }
+
+    void ApplyToCube(string val)
+    {
+        try
+        {
+            scaleVal = Convert.ToInt32(val);
+            if (scaleVal <= 2)
+                scaleVal = 2;
+            //Debug.Log("]= " + scaleVal);
+            isCubeDataReceived = true;
+        }
+        catch (Exception e)
+        {
+            Debug.Log("\nExp: " + e.StackTrace);
+        }
     }
 
 }

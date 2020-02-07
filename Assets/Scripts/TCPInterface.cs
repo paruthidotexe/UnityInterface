@@ -40,7 +40,16 @@ public class TCPInterface
 
     public void OnInit()
     {
+        if (logStreamWriter != null)
+        {
+            if (logStreamWriter.BaseStream != null)
+            {
+                //logStreamWriter.Flush();
+                logStreamWriter.Close();                
+            }
+        }
         logStreamWriter = new StreamWriter(Application.persistentDataPath + "/" + logFileName);
+
         serverPort = 12345;
         isThreadRunning = true;
         ThreadStart threadStart = new ThreadStart(OnConnectToServer);
@@ -85,56 +94,60 @@ public class TCPInterface
             tcpClient.Connect(serverUrl, serverPort);
             logStr += "-- Connect -- ";
             isConnected = true;
+            networkStream = tcpClient.GetStream();
+            if (networkStream.CanRead)
+            {
+                while (isConnected)
+                {
+                    string fullStr = "";
+                    //yield return new WaitForSeconds(0.1f);
+                    //fullStr += "\n[" + msgCount + "] -> ";
+                    msgCount++;
+                    try
+                    {
+                        // Translate the passed message into ASCII and store it as a Byte array.
+                        //Byte[] data = Encoding.ASCII.GetBytes(message);
+                        // Send the message to the connected TcpServer. 
+                        //networkStream.Write(data, 0, data.Length);
+
+                        byte[] byteBuffer = new byte[2048];
+                        int bufferLength = networkStream.Read(byteBuffer, 0, 2048);
+
+                        //Debug.Log(byteBuffer);
+                        for (int i = 0; i < bufferLength; i++)
+                            fullStr += Convert.ToInt32(byteBuffer[i]);
+                        //fullStr += ">";
+                        this.ReceivedData(fullStr);
+                        TCPInterface.Fire_ReceiveData(fullStr);
+                    }
+                    catch (Exception e)
+                    {
+                        logStr += "Exp : WhileLoop :  " + e.StackTrace;
+                    }
+                    //Thread.Sleep(2000);
+                }
+            }
+            networkStream.Close();
+            tcpClient.Close();
         }
         catch (Exception e)
         {
-            logStr += "-- Exp : " + e.StackTrace;
+            logStr += "\nExp: " + e.StackTrace;
+            OnDisconnect();
         }
-
-        networkStream = tcpClient.GetStream();
-        if (networkStream.CanRead)
-        {
-            while (isConnected)
-            {
-                string fullStr = "";
-                //yield return new WaitForSeconds(0.1f);
-                //fullStr += "\n[" + msgCount + "] -> ";
-                msgCount++;
-                try
-                {
-                    // Translate the passed message into ASCII and store it as a Byte array.
-                    //Byte[] data = Encoding.ASCII.GetBytes(message);
-                    // Send the message to the connected TcpServer. 
-                    //networkStream.Write(data, 0, data.Length);
-
-                    byte[] byteBuffer = new byte[2048];
-                    int bufferLength = networkStream.Read(byteBuffer, 0, 2048);
-                    
-                    //Debug.Log(byteBuffer);
-                    for (int i = 0; i < bufferLength; i++)
-                        fullStr += Convert.ToInt32(byteBuffer[i]);
-                    this.ReceivedData(fullStr);
-                    TCPInterface.Fire_ReceiveData(fullStr);
-                }
-                catch (Exception e)
-                {
-                    logStr += "Exp : WhileLoop :  " + e.StackTrace;
-                }
-                //Thread.Sleep(2000);
-            }
-        }
-        networkStream.Close();
-        tcpClient.Close();
     }
 
     public void OnDisconnect()
     {
         isConnected = false;
-        networkStream.Close();
-        tcpClient.Close();
-        tcpThread.Abort();
+        if(networkStream != null)
+            networkStream.Close();
+        if(tcpClient != null)
+            tcpClient.Close();
+        if(tcpThread != null)
+            tcpThread.Abort();
 
-        if (logStreamWriter.BaseStream != null)
+        if (logStreamWriter != null)
         {
             if (logStreamWriter.BaseStream != null)
             {
@@ -148,7 +161,7 @@ public class TCPInterface
     void ReceivedData(string receivedStr)
     {
         logStr += receivedStr;
-        logStreamWriter.Write(receivedStr);        
+        logStreamWriter.Write(receivedStr);
     }
 
     public string GetTcpLog()
