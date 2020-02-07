@@ -17,12 +17,14 @@ while True:
     while True:
         try:
             data = randint(0, 9)
-            now = datetime.now()
-            date_time = now.strftime("%m/%d/%Y, %H:%M:%S")            
+            print(data)
 
-            print ('Server sent:', date_time)
-            #conn.send(data.to_bytes(2, byteorder='big'))
-            conn.send(bytes(date_time, "utf-8"))
+            # now = datetime.now()
+            # date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+            # print ('Date, Time :', date_time)
+
+            conn.send(data.to_bytes(2, byteorder='big'))
+            #conn.send(bytes(date_time, "utf-8"))
             time.sleep(1)
         except socket.error:
             print ('Client connection closed', addr)

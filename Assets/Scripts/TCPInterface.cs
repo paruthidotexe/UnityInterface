@@ -26,8 +26,12 @@ public class TCPInterface
     string logFileName = "TCPLog.txt";
     StreamWriter logStreamWriter;
     NetworkStream networkStream;
+    public string receivedStr = "";
 
     int msgCount = 0;
+
+    public delegate void OnReceiveDataDelegate(string val);
+    public static event OnReceiveDataDelegate receiveDataEvent;
 
     public TCPInterface()
     {
@@ -88,33 +92,39 @@ public class TCPInterface
         }
 
         networkStream = tcpClient.GetStream();
-        while (isConnected)
+        if (networkStream.CanRead)
         {
-            string fullStr = "";
-            //yield return new WaitForSeconds(0.1f);
-            fullStr += "\n[" + msgCount + "] -> ";
-            msgCount++;
-            try
+            while (isConnected)
             {
-                // Translate the passed message into ASCII and store it as a Byte array.
-                //Byte[] data = Encoding.ASCII.GetBytes(message);
-                // Send the message to the connected TcpServer. 
-                //networkStream.Write(data, 0, data.Length);
+                string fullStr = "";
+                //yield return new WaitForSeconds(0.1f);
+                //fullStr += "\n[" + msgCount + "] -> ";
+                msgCount++;
+                try
+                {
+                    // Translate the passed message into ASCII and store it as a Byte array.
+                    //Byte[] data = Encoding.ASCII.GetBytes(message);
+                    // Send the message to the connected TcpServer. 
+                    //networkStream.Write(data, 0, data.Length);
 
-                byte[] byteBuffer = new byte[2048];
-                int bufferLength = networkStream.Read(byteBuffer, 0, 2048);
-                //Debug.Log(byteBuffer);
-                for (int i = 0; i < bufferLength; i++)
-                    fullStr += Convert.ToChar(byteBuffer[i]);
-                this.ReceivedData(fullStr);
+                    byte[] byteBuffer = new byte[2048];
+                    int bufferLength = networkStream.Read(byteBuffer, 0, 2048);
+                    
+                    //Debug.Log(byteBuffer);
+                    for (int i = 0; i < bufferLength; i++)
+                        fullStr += Convert.ToInt32(byteBuffer[i]);
+                    this.ReceivedData(fullStr);
+                    TCPInterface.Fire_ReceiveData(fullStr);
+                }
+                catch (Exception e)
+                {
+                    logStr += "Exp : WhileLoop :  " + e.StackTrace;
+                }
+                //Thread.Sleep(2000);
             }
-            catch (Exception e)
-            {
-                logStr += "Exp : WhileLoop :  " + e.StackTrace;
-            }
-            //Thread.Sleep(2000);
         }
         networkStream.Close();
+        tcpClient.Close();
     }
 
     public void OnDisconnect()
@@ -138,12 +148,22 @@ public class TCPInterface
     void ReceivedData(string receivedStr)
     {
         logStr += receivedStr;
-        logStreamWriter.Write(receivedStr);
+        logStreamWriter.Write(receivedStr);        
     }
 
     public string GetTcpLog()
     {
         return logStr;
+    }
+    public string GetReceiveData()
+    {
+        return receivedStr;
+    }
+
+    public static void Fire_ReceiveData(string val)
+    {
+        if (receiveDataEvent != null)
+            receiveDataEvent(val);
     }
 }
 
