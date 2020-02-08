@@ -5,7 +5,7 @@ from random import randint
 import threading
 
 HOST = '127.0.0.1'
-PORT = 12345
+PORT = 20480
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
@@ -32,3 +32,14 @@ while True:
 
 conn.close()
 
+'''
+
+8,9,10 : TCP Server Client
+
+11 - 16 : REST, Chat, Mongo, Flask?
+
+17 - 23 : SQL, VUE / React, OAuth 
+
+24 - 29 : Deployment, Cloud, Automation test, Logging, Debugging 
+
+'''

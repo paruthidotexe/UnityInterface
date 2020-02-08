@@ -50,7 +50,7 @@ public class TCPInterface
         }
         logStreamWriter = new StreamWriter(Application.persistentDataPath + "/" + logFileName);
 
-        serverPort = 12345;
+        serverPort = HMPort;
         isThreadRunning = true;
         ThreadStart threadStart = new ThreadStart(OnConnectToServer);
         tcpThread = new Thread(threadStart);
@@ -111,11 +111,11 @@ public class TCPInterface
                         //networkStream.Write(data, 0, data.Length);
 
                         byte[] byteBuffer = new byte[2048];
-                        int bufferLength = networkStream.Read(byteBuffer, 0, 2048);
+                        int bufferLength = networkStream.Read(byteBuffer, 0, 4096);
 
                         //Debug.Log(byteBuffer);
                         for (int i = 0; i < bufferLength; i++)
-                            fullStr += Convert.ToInt32(byteBuffer[i]);
+                            fullStr += Convert.ToChar(byteBuffer[i]);
                         //fullStr += ">";
                         this.ReceivedData(fullStr);
                         TCPInterface.Fire_ReceiveData(fullStr);
@@ -130,9 +130,20 @@ public class TCPInterface
             networkStream.Close();
             tcpClient.Close();
         }
-        catch (Exception e)
+        catch (SocketException exp)
         {
-            logStr += "\nExp: " + e.StackTrace;
+            logStr += "\nExp-SocketException :" + exp.StackTrace;
+        }
+        catch (ArgumentNullException exp) // check ip address and port no
+        {
+            logStr += "\nExp-ArgumentNullException :" + exp.StackTrace;
+        }
+        catch (Exception exp)
+        {
+            logStr += "\nExp: " + exp.StackTrace;
+        }
+        finally
+        {
             OnDisconnect();
         }
     }

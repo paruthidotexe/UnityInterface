@@ -48,5 +48,6 @@ public class ThreadManager : MonoBehaviour
                 executeCopiedOnMainThread[i]();
             }
         }
-    } 
+    }
+    
 }
