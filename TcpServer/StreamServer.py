@@ -25,7 +25,7 @@ while True:
 
             conn.send(data.to_bytes(2, byteorder='big'))
             #conn.send(bytes(date_time, "utf-8"))
-            time.sleep(1)
+            #time.sleep(1)
         except socket.error:
             print ('Client connection closed', addr)
             break

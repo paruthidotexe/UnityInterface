@@ -26,7 +26,7 @@ public class TCPInterface
     string logFileName = "TCPLog.txt";
     StreamWriter logStreamWriter;
     NetworkStream networkStream;
-    public string receivedStr = "";
+    public static string receivedStr = "";
 
     int msgCount = 0;
 
@@ -110,19 +110,21 @@ public class TCPInterface
                         // Send the message to the connected TcpServer. 
                         //networkStream.Write(data, 0, data.Length);
 
-                        byte[] byteBuffer = new byte[2048];
-                        int bufferLength = networkStream.Read(byteBuffer, 0, 4096);
+                        byte[] byteBuffer = new byte[1024];
+                        int bufferLength = networkStream.Read(byteBuffer, 0, 1024);
 
                         //Debug.Log(byteBuffer);
                         for (int i = 0; i < bufferLength; i++)
                             fullStr += Convert.ToChar(byteBuffer[i]);
                         //fullStr += ">";
-                        this.ReceivedData(fullStr);
+                        TCPInterface.receivedStr = fullStr;
+                        //this.ReceivedData(fullStr);
                         TCPInterface.Fire_ReceiveData(fullStr);
                     }
                     catch (Exception e)
                     {
                         logStr += "Exp : WhileLoop :  " + e.StackTrace;
+                        break;
                     }
                     //Thread.Sleep(2000);
                 }

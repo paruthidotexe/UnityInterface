@@ -14,10 +14,10 @@ public class TCPClientUI : MonoBehaviour
     TCPInterface tcpInterface = new TCPInterface();
     string logStr = "";
 
+    string receivedStr = "";
+    bool isCubeDataReceived = false;
     public GameObject cubeObj;
     int scaleVal = 2;
-    bool isCubeDataReceived = false;
-    
 
     void Start()
     {
@@ -27,8 +27,8 @@ public class TCPClientUI : MonoBehaviour
 
     void Update()
     {
-        log2Text.text = tcpInterface.GetReceiveData();
         logText.text = tcpInterface.GetTcpLog();
+        log2Text.text = receivedStr;
 
         if (isCubeDataReceived)
         {
@@ -68,6 +68,7 @@ public class TCPClientUI : MonoBehaviour
         //logStr += val;
         //logText.text = logStr;
         Debug.Log("OnReceiveData:" + val);// + Convert.ToInt32(val)
+        receivedStr = val;
         ParseReceivedData(val);
         //ApplyToCube(val);       
     }

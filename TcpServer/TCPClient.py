@@ -31,11 +31,11 @@ while True:
         full_msg += msg
 
         if len(full_msg)-bufferSize == msglen:
-            #print("Full msg received")
+            print("Full msg received")
             #print(full_msg[bufferSize:].decode("utf-8"), end='\n')
 
             data = pickle.loads(full_msg[bufferSize:])
-            #print(data)
+            print(data)
 
             new_msg = True
             full_msg = b''
@@ -45,3 +45,5 @@ while True:
 clientSocket.close()  
 
 #print (full_msg)
+
+

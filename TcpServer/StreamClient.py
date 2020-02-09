@@ -10,9 +10,11 @@ s.connect((HOST, PORT))
 
 while True:
     data = s.recv(1024)
-    #print (data)
+    if not data:
+        break
+    print (data)
     strVal = str(data)
-    print("--<<" + strVal + ">>--")
+    #print("--<<" + strVal + ">>--")
 
 s.close()
 
