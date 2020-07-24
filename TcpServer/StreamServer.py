@@ -5,27 +5,51 @@ from random import randint
 import threading
 
 HOST = '127.0.0.1'
-PORT = 20480
+PORT = 8888
+
+def ClientThread(clientSocket):
+    try:
+        while True:   
+            # data received from client 
+            data = clientSocket.recv(1024) 
+            #print(data)  
+            if not data: 
+                print('Bye')                
+                # lock released on exit 
+                #print_lock.release() 
+                break
+            print("Client : " + data.decode("utf-8"), end='\n')
+
+    except socket.error as exp:
+        print("Exp in ClientThread : " + str(exp))
+    print('closed')   
+    # connection closed 
+    clientSocket.close()
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
-s.listen(1)
+s.listen(10)
 
 while True:
     conn, addr = s.accept()
+    conn.send(b'Streaming python server')
     print ('Client connection accepted ', addr)
+    newClientThread = threading.Thread(target= ClientThread, args=(conn,))
+    #newClientThread.daemon = True
+    newClientThread.start()
     while True:
         try:
             data = randint(0, 9)
-            print(data)
+            print('Sending:{' +  str(data) + '}')
 
             # now = datetime.now()
             # date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
             # print ('Date, Time :', date_time)
 
-            conn.send(data.to_bytes(2, byteorder='big'))
+            conn.send(bytes(str(data),"utf-8"))
             #conn.send(bytes(date_time, "utf-8"))
-            #time.sleep(1)
+            time.sleep(1)
         except socket.error:
             print ('Client connection closed', addr)
             break

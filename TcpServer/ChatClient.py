@@ -7,7 +7,6 @@ import threading
 HOST = '127.0.0.1'
 PORT = 20480
 
-
 def ClientThread(clientSocket):
     try:
         while True:   
@@ -39,9 +38,8 @@ def SendMsg(clientSocket):
     # connection closed 
     clientSocket.close()
 
-    
 
-def Main():    
+def Main():
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     clientSocket.connect((HOST, PORT)) 
     print('connect')
@@ -51,9 +49,8 @@ def Main():
     msgThread = threading.Thread(target= SendMsg, args=(clientSocket,))
     #msgThread.daemon = True
     msgThread.start()
-    
+
 
 if __name__ == '__main__': 
     Main() 
 
-    
